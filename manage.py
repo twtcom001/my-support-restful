@@ -22,10 +22,6 @@ migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
 
 
-# flask.ext.uploads  模块设置
-upfile = UploadSet('FILE')      #名字最好取大写，因为config里面都是要求大写，这样容易匹配  
-configure_uploads(app, upfile)  #再把app和这个upfile这个上传组给绑定
-
 # shell模式增加字典
 def make_shell_context():
     return dict(db=db)

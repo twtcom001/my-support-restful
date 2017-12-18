@@ -2,7 +2,7 @@
 import hashlib
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin, AnonymousUserMixin
-from . import db, login_manager
+from . import db
 
 
 
@@ -66,13 +66,6 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_administrator(self):
         return False
-
-login_manager.anonymous_user = AnonymousUser
-
-# callback function for flask-login extentsion
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 class Permission:
     ADMINISTER = 0x01
