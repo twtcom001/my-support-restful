@@ -1,0 +1,2 @@
+#windows 初始化虚拟环境
+c:\Python27\python.exe c:\Python27\Scripts\virtualenv.exe E:\my-support-restful\win_env
