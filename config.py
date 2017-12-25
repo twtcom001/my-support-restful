@@ -17,7 +17,7 @@ class Config():
 
     pip.exe install PyMySQL
     """
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@127.0.0.1:3306/support'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@127.0.0.1:3306/support'
     ARTICLES_PER_PAGE = 10
     COMMENTS_PER_PAGE = 6
     SECRET_KEY = 'secret key to protect from csrf'
