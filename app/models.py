@@ -8,8 +8,8 @@ from . import db
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64), unique=True, index=True)
     username = db.Column(db.String(64), unique=True, index=True)
+    nickname = db.Column(db.String(64), unique=True, index=True)
     password_hash = db.Column(db.String(128))
     avatar_hash = db.Column(db.String(32))
     head_img = db.Column(db.String(200))
@@ -19,8 +19,8 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
 
     @staticmethod
-    def insert_admin(email, username, password, role_id):
-        user = User(email=email, username=username, password=password, role_id=role_id)
+    def insert_admin(username, nickname, password, role_id):
+        user = User(username=username, nickname=nickname, password=password, role_id=role_id)
         db.session.add(user)
         db.session.commit()
 
@@ -38,9 +38,9 @@ class User(UserMixin, db.Model):
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
-        if self.email is not None and self.avatar_hash is None:
+        if self.username is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(
-                    self.email.encode('utf-8')).hexdigest()
+                    self.username.encode('utf-8')).hexdigest()
 
     def gravatar(self, size=40, default='identicon', rating='g'):
         # if request.is_secure:
@@ -49,7 +49,7 @@ class User(UserMixin, db.Model):
         #     url = 'http://www.gravatar.com/avatar'
         url = 'http://gravatar.duoshuo.com/avatar'
         hash = self.avatar_hash or hashlib.md5(
-            self.email.encode('utf-8')).hexdigest()
+            self.username.encode('utf-8')).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
  
@@ -95,7 +95,7 @@ class Role(db.Model):
 
 class Logs(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(64))
+    username = db.Column(db.String(64))
     level = db.Column(db.Integer)
     op_time = db.Column(db.DateTime, doc="最后登录时间")
     comment = db.Column(db.String(255)) 

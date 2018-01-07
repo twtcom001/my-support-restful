@@ -1,7 +1,7 @@
 #coding: utf-8
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
-
+FLASK_CONFIG = 'default'
 class Config():
     # DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
@@ -17,7 +17,7 @@ class Config():
 
     pip.exe install PyMySQL
     """
-    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:@127.0.0.1:3306/support'
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@127.0.0.1:3306/support'
     ARTICLES_PER_PAGE = 10
     COMMENTS_PER_PAGE = 6
     SECRET_KEY = 'secret key to protect from csrf'
@@ -41,6 +41,7 @@ class DevConfig(Config):
     """Development config class."""
     # Open the DEBUG
     DEBUG = True
+    ACAO_ACCESS_URL = 'http://127.0.0.1:8080'
 
 config = {
 'development': DevConfig,
