@@ -121,5 +121,14 @@ class Introduce(db.Model):
     introduce_from = db.Column(db.String(100))
     introduce_price = db.Column(db.String(20), doc="引进价格")
     introduce_date = db.Column(db.String(20), doc="引进时间")
-
     palnts_id = db.Column(db.String(64), db.ForeignKey('plants.local_id'))
+
+class Account(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.String(20), doc="录入时间")
+    total = db.Column(db.Integer)
+    src = db.Column(db.Integer,doc='1 支出，2 其他收入，3 淘宝收入，4 微信收入')
+    comment = db.Column(db.String(255), doc="备注")
+
+
+
