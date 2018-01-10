@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #coding: utf-8
 import os
-from flask.ext.script import Manager, Shell
-from flask.ext.migrate import Migrate, MigrateCommand
+from flask_script import Manager, Shell
+from flask_migrate import Migrate, MigrateCommand
 
 from app import create_app, db
 from app.models import User

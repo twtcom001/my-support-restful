@@ -12,7 +12,7 @@ def create_app(config_name):
 
     db.init_app(app)
     from .main import main as main_blueprint
-    app.register_blueprint(main_blueprint, url_prefix='/')
+    app.register_blueprint(main_blueprint)
 
     from .v1_0 import v1_0 as v1_0_blueprint
     app.register_blueprint(v1_0_blueprint, url_prefix='/api/v1.0')

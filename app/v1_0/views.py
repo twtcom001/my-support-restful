@@ -2,7 +2,7 @@
 
 import json
 from flask import jsonify, abort, request 
-from flask.ext.restful import Resource, fields, reqparse
+from flask_restful import Resource, fields, reqparse
 from functools import wraps
 
 
