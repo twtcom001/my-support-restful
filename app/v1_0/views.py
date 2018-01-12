@@ -1,7 +1,7 @@
 # coding:utf-8
 
 import json
-from flask import jsonify, abort, request 
+from flask import jsonify, abort, request, g
 from flask_restful import Resource, fields, reqparse
 from functools import wraps
 
@@ -9,12 +9,18 @@ from functools import wraps
 from ..models import Permission, User, Logs, Plants, db, Account
 from ..decorator import acao_auth
 from . import v1_0
-
-
+from app import auth
+#User 接口
+@v1_0.route('/test', methods=['GET'])
+@acao_auth
+@auth.login_required
+def get_test():
+	return jsonify('Hello, %s' % g.user.username)
 
 #User 接口
 @v1_0.route('/users', methods=['GET'])
-@acao_auth
+
+@auth.login_required
 def get_userlist(page=1,size=10):
 	if request.args.get('page'):
 		page = int(request.args.get('page'))
@@ -73,7 +79,7 @@ def update_user(user_id):
 
 
 @v1_0.route('/users/<int:user_id>', methods=['GET'])
-@acao_auth
+
 def get_user(user_id):
 	userlist = []
 	user = User.query.filter_by(id=user_id).first()
@@ -85,6 +91,7 @@ def get_user(user_id):
 	return jsonify(userlist)
 
 @v1_0.route('/users/del/<int:user_id>', methods=['GET'])
+@auth.login_required
 def del_user(user_id):
 	user = User.query.filter_by(id=user_id).first()	
 	if not user:
@@ -98,7 +105,8 @@ def del_user(user_id):
 
 # Account 接口
 @v1_0.route('/account', methods=['GET'])
-@acao_auth
+
+@auth.login_required
 def get_account(page=1,size=10):
 	if request.args.get('page'):
 		page = int(request.args.get('page'))
@@ -175,4 +183,22 @@ def del_account(account_id):
 		db.session.delete(account)
 		db.session.commit()
 		return jsonify({'account':'收支删除成功'})
+
+
+@v1_0.route('/token', methods=['GET'])
+@auth.login_required
+def token():
+	token = g.user.generate_auth_token()
+	return jsonify(token)
+
+@v1_0.route('/authtoken', methods=['GET'])
+
+def auth_token():
+	if request.args.get('token'):
+		user = User.verify_auth_token(request.args.get('token'))
+		if not user:
+			return jsonify({'status':False})
+		return jsonify({'status':True})
+	return jsonify({'status':False})
+
 

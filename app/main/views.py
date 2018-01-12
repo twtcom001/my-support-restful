@@ -26,7 +26,8 @@ def auth():
 		user.last_login = datetime.now()
 		db.session.add(user)
 		db.session.commit()
-		return jsonify({'auth':'valid'})
+		token = user.generate_auth_token()
+		return jsonify({'auth':'valid', 'token':token})
 	else:
 		return jsonify({'auth':'invalid'})
 

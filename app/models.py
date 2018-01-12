@@ -1,7 +1,9 @@
 #coding: utf-8
 import hashlib
 from werkzeug.security import generate_password_hash, check_password_hash
+from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature
 from flask_login import UserMixin, AnonymousUserMixin
+from flask import current_app, g
 from . import db
 
 
@@ -59,6 +61,23 @@ class User(UserMixin, db.Model):
 
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
+
+    def generate_auth_token(self, expiration = 600):
+        s = Serializer(current_app.config.get('SECRET_KEY'), expires_in = expiration)
+        return s.dumps({ 'id': self.id })
+
+    @staticmethod
+    def verify_auth_token(uername_or_token):
+        s = Serializer(current_app.config.get('SECRET_KEY'))
+        try:
+            data = s.loads(uername_or_token)
+        except SignatureExpired:
+            return None # valid token, but expired
+        except BadSignature:
+            return None # invalid token
+        user = User.query.get(data['id'])
+        return user
+
 
 class AnonymousUser(AnonymousUserMixin):
     def can(slef, permissions):

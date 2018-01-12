@@ -1,7 +1,8 @@
 # coding:utf-8
 import app 
-
-from flask import make_response 
+from app import auth
+from .models import Permission, User, Logs, Plants, db, Account
+from flask import make_response, g, request
 from functools import wraps
 from config import  config, FLASK_CONFIG
 
@@ -16,3 +17,16 @@ def acao_auth(f):
 		response.headers['Access-Control-Allow-Headers'] = 'x-requested-with,content-type'
 		return response
 	return wrapper
+
+@auth.verify_password
+def verify_password(username_or_token, password):
+    if request.path == "/api/v1.0/authtoken":
+        user = User.query.filter_by(username=username_or_token).first()
+        if not user or not user.verify_password(password):
+            return False
+    else:
+        user = User.verify_auth_token(username_or_token)
+        if not user:
+            return False    
+    g.user = user   
+    return True

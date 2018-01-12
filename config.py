@@ -20,7 +20,8 @@ class Config():
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:123456@127.0.0.1:3306/support'
     ARTICLES_PER_PAGE = 10
     COMMENTS_PER_PAGE = 6
-    SECRET_KEY = 'secret key to protect from csrf'
+    CSRF_ENABLED = True
+    SECRET_KEY = 'Myadmin_secert'
     WTF_CSRF_SECRET_KEY = 'random key for form' # for csrf protection
     # Take good care of 'SECRET_KEY' and 'WTF_CSRF_SECRET_KEY', if you use the
     # bootstrap extension to create a form, it is Ok to use 'SECRET_KEY',
