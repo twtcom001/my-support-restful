@@ -1,0 +1,2 @@
+webpackJsonp([1],{Kblq:function(e,t,n){"use strict";Object.defineProperty(t,"__esModule",{value:!0});var c={render:function(){this.$createElement;this._self._c;return this._m(0)},staticRenderFns:[function(){var e=this.$createElement,t=this._self._c||e;return t("div",{staticClass:"hello"},[t("h1",[this._v("清蒸庄园管理后台")])])}]},s=n("VU/8")({name:"HelloWorld"},c,!1,function(e){n("kcFN")},"data-v-c1dc2fce",null);t.default=s.exports},kcFN:function(e,t){}});
+//# sourceMappingURL=1.5b9c7feae9206cd87f60.js.map
