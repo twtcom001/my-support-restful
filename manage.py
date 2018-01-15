@@ -34,7 +34,7 @@ def deploy():
 	# 初始化权限
 	Role.insert_roles()
 	#初始化管理员账号
-	User.insert_admin(email='106640085@qq.com', username='xuhonglin', password='xuhonglin', role_id=1)
+	User.insert_admin(username='106640085@qq.com', nickname='xuhonglin', password='xuhonglin', role_id=1)
 
 
 if __name__ == '__main__':
