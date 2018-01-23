@@ -144,9 +144,10 @@ class Introduce(db.Model):
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    account_type = db.Column(db.String(20))
     date = db.Column(db.String(20), doc="录入时间")
     total = db.Column(db.Integer)
-    src = db.Column(db.Integer,doc='1 支出，2 其他收入，3 淘宝收入，4 微信收入')
+    src = db.Column(db.String(20))
     comment = db.Column(db.String(255), doc="备注")
 
 

@@ -112,15 +112,16 @@ def get_account(page=1,size=10):
 		page = int(request.args.get('page'))
 	if request.args.get('size'):
 		size = int(request.args.get('size'))
+	account_type = request.args.get('account_type')
 	if request.args.get('src'):
 		src = int(request.args.get('src'))
-		records = Account.query.filter(Account.src == src).offset((page-1)*size).limit(size)
-		total = Account.query.filter(Account.src == src)
+		records = Account.query.filter(Account.src == src and Account.account_type == account_type ).offset((page-1)*size).limit(size)
+		total = Account.query.filter(Account.src == src and Account.account_type == account_type )
 
 	else:
 		src = ''
-		records = Account.query.offset((page-1)*size).limit(size)
-		total = Account.query.all()
+		records = Account.query.filter(Account.account_type == account_type ).offset((page-1)*size).limit(size)
+		total = Account.query.filter(Account.account_type == account_type ).all()
 
 	recordtotal = 0
 	for i in total:
@@ -140,7 +141,7 @@ def get_account(page=1,size=10):
 def add_account():
 	data =request.data
 	if not data or 'date' not in data or 'total' not in data \
-		or 'src' not in data:
+		or 'src' not in data or 'account_type' not in data:
 		abort(404)
 	j_data =  json.loads(data)
 	if not 'comment' in data:
@@ -151,7 +152,8 @@ def add_account():
 			date=j_data['date'],
 			total=j_data['total'],
 			src=j_data['src'],
-			comment=j_data['comment']
+			comment=j_data['comment'],
+			account_type=j_data['account_type']
 			)
 	db.session.add(account)
 	db.session.commit()
