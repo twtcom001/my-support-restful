@@ -62,7 +62,7 @@ class User(UserMixin, db.Model):
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
 
-    def generate_auth_token(self, expiration = 600):
+    def generate_auth_token(self, expiration = 3600):
         s = Serializer(current_app.config.get('SECRET_KEY'), expires_in = expiration)
         return s.dumps({ 'id': self.id })
 

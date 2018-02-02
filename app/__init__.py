@@ -19,9 +19,12 @@ def create_app(config_name):
     db.init_app(app)
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
-
+    #old front
     from .v1_0 import v1_0 as v1_0_blueprint
     app.register_blueprint(v1_0_blueprint, url_prefix='/api/v1.0')
+    #new front
+    from .v2_0 import v2_0 as v2_0_blueprint
+    app.register_blueprint(v2_0_blueprint, url_prefix='/api/v2.0')
 
     return app
 

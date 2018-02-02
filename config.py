@@ -42,7 +42,7 @@ class DevConfig(Config):
     """Development config class."""
     # Open the DEBUG
     DEBUG = True
-    ACAO_ACCESS_URL = 'http://127.0.0.1'
+    ACAO_ACCESS_URL = 'http://127.0.0.1:9528'
 
 config = {
 'development': DevConfig,
