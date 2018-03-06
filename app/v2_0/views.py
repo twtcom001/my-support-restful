@@ -167,12 +167,12 @@ def get_account(page=1,size=10):
 	account_type = request.args.get('account_type')
 	if request.args.get('src'):
 		src = int(request.args.get('src'))
-		records = Account.query.filter(Account.src == src and Account.account_type == account_type ).offset((page-1)*size).limit(size)
+		records = Account.query.order_by(Account.src.desc()).filter(Account.src == src and Account.account_type == account_type ).offset((page-1)*size).limit(size)
 		total = Account.query.filter(Account.src == src and Account.account_type == account_type )
 
 	else:
 		src = ''
-		records = Account.query.filter(Account.account_type == account_type ).offset((page-1)*size).limit(size)
+		records = Account.query.order_by(Account.src.desc()).filter(Account.account_type == account_type ).offset((page-1)*size).limit(size)
 		total = Account.query.filter(Account.account_type == account_type ).all()
 
 	recordtotal = 0
