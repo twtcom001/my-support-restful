@@ -184,7 +184,7 @@ def get_account(page=1,size=10):
 		i_dict = i.__dict__
 		i_dict.pop('_sa_instance_state')
 		recordlist.append(i_dict)
-	count = len(recordlist)
+	count = len(total)
 	result ={"code":20000,"data":{"list":recordlist,'total':count, 'count':recordtotal,'src':src,'page':page,'size':size}}
 	return jsonify(result)
 
@@ -228,6 +228,8 @@ def update_account(account_id):
 		account.date = j_data['date']
 	if account.src != j_data['src']:
 		account.src = j_data['src']
+	if account.comment != j_data['comment']:
+		account.comment = j_data['comment']
 	db.session.commit()
 	return jsonify({"code":20000})
 
