@@ -7,12 +7,15 @@ from flask_restful import Resource, fields, reqparse
 from functools import wraps
 
 
-from ..models import Permission, User, Logs, Plants, db, Account
+from ..models import Permission, User, Logs, Plants, db, Account, Dict
 from ..decorator import acao_auth, auth_token
 from . import v2_0
 from app import auth
-#User 接口
-#
+# 登录接口
+# User 接口
+# Account 接口
+
+# 登录接口
 @v2_0.route('/login', methods=['POST'])
 @acao_auth
 def login():
@@ -45,24 +48,6 @@ def info():
 		return jsonify({"code":20000,"data":{"roles":user.role_id,"role":user.role_id,"name":user.username,"avatar":"https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"}})
 	else:
 		return jsonify({"code":40})
-
-@v2_0.route('/table/list', methods=['GET'])
-#@acao_auth
-@auth_token
-def tableslist():
-	#x_token = request.headers.get('X-Token')
-	return jsonify({"code":20000,"data":{"items":[
-			{"id":"340000198907156578","title":"Befmh ifnolbjti paorml suiblwwnl lsf bnsyhvfje qardl snkaikwpbi pxhj bghxtn hcxtzfolb qhca yqpo.","status":"published","author":"name","display_time":"1973-10-07 12:29:07","pageviews":1694},
-			{"id":"650000200504054158","title":"Pirtcth fjsouqkun qghpili nkm vlitauq sybbklng rcxevj malb qrgi eiawvyflo lepqpvitrh yhqoftvw xwbliqv rquy bldkpbeda jiuybvf.","status":"draft","author":"name","display_time":"1988-07-20 20:42:39","pageviews":3132},
-			{"id":"130000199506077890","title":"Dcze nsrrjpt dofbbhe otzzmylfru giymeqg oquboqk bjdnrumk ervzexoc kmxjo kupwo niqpzaxbc klgswa csuyfwl vhgsggt grfccpiey yciuwy zewktj iksscgpr.","status":"draft","author":"name","display_time":"1997-09-06 11:31:54","pageviews":4570},
-			{"id":"820000201012105015","title":"Quncgezmgi qop beynfdkpq sncworg ywiimwrokq nrozxomfa hghhpmsyn pmpfze kiojipy qsengrn xoe pvv eyheeb ehyzjlrea enbvjxqisb qjhtj jtuoltj hneohis.","status":"draft","author":"name","display_time":"1985-11-06 01:41:16","pageviews":1029},
-			{"id":"410000198812038550","title":"Rav tsouqql uccgtgyl uqybtkiepg kebjdxt whpqnr ywpg nthrvgc yayygv yyixs hywchwfdi bjnullqah alri hvtqykyhs neyg syah elo zsvknl tpsija.","status":"draft","author":"name","display_time":"1979-04-28 12:25:49","pageviews":444},
-			{"id":"430000197310143683","title":"Efyy tkdcf qtogo vflnf kmsmcdib fpgafx yvymoktv doxhpiomr gjcrkph mrvn rntvw nfb mlltzqf.","status":"draft","author":"name","display_time":"1991-10-23 05:33:36","pageviews":4817},
-			{"id":"410000197912169836","title":"Lglxpt pxusiyvkjt rdkjjvrl busiy bifrcpzhp raykopcddn vgxja veikgpf isumdgya sjig cnnobibwc hvvhw eicu riuligb mkfzc ebvh tqydkh.","status":"deleted","author":"name","display_time":"2016-04-17 21:28:43","pageviews":2710},
-			{"id":"520000198704186842","title":"Nhb zwaiyim vjfrgdrl hpsq cpjiius dvit olujbnh weog buwthorsl zxbmy hlqblwwtc npj jjvkbb xsymmylug qqxqvdt sgbgh.","status":"deleted","author":"name","display_time":"2005-01-27 09:49:57","pageviews":2283},
-			{"id":"450000201510229660","title":"Grzjvyxvg tpyqxdi uihepwdu shyomonjhn pxskw lnyfxh ewpi hummsypr kbrp vdhlndbugc zcleuedd gbprqexes njgyh det vij ijc.","status":"draft","author":"name","display_time":"2004-06-06 09:53:25","pageviews":1729}
-			]}})
-
 
 #User 接口
 @v2_0.route('/users', methods=['GET'])
@@ -154,7 +139,6 @@ def del_user(user_id):
 		db.session.commit()
 		return jsonify({"code":20000})
 
-
 # Account 接口
 @v2_0.route('/account', methods=['GET'])
 @acao_auth
@@ -244,3 +228,82 @@ def del_account(account_id):
 		db.session.delete(account)
 		db.session.commit()
 		return jsonify({"code":20000})
+
+#Dict 接口
+@v2_0.route('/dict', methods=['GET'])
+@acao_auth
+@auth_token
+def get_dictlist(page=1,size=10):
+	if request.args.get('page'):
+		page = int(request.args.get('page'))
+	if request.args.get('size'):
+		size = int(request.args.get('size'))
+	dictlist = []
+	dictcount =Dict.query.filter(id>0).count()
+	dict = Dict.query.offset((page-1)*size).limit(size)
+	for i in dict:
+		i_dict = i.__dict__
+		i_dict.pop('_sa_instance_state')
+		dictlist.append(i_dict)
+	result ={"code":20000,"data":{"list":dictlist,'total':dictcount,'page':page,'size':size}}
+	return jsonify(result)
+@v2_0.route('/dict', methods=['POST'])
+@acao_auth
+@auth_token
+def add_dict():
+	data =request.data
+	
+	if not data or 'father' not in data or 'key' not in data \
+		or 'value' not in data:
+		abort(404)
+	j_data =  json.loads(data)
+	dicts = Dict(
+			father=j_data['father'],
+			key=j_data['key'],
+			value=j_data['value'],
+			)
+	db.session.add(dicts)
+	db.session.commit()
+	
+	return jsonify({"code":20000})
+
+@v2_0.route('/dict/<int:dict_id>', methods=['PUT'])
+@acao_auth
+@auth_token
+def update_dict(dict_id):
+	data =request.data
+	dicts = Dict.query.filter_by(id=dict_id).first()	
+	if not dicts :
+		abort(404)
+	j_data =  json.loads(data)
+	if 'father' in data and j_data['father'] != "":
+		dicts.father = j_data['father']
+	if 'key' in data and j_data['key'] != "":
+		dicts.key = j_data['key']
+	if 'value' in data and j_data['value'] != "":
+		dicts.value = j_data['value']
+	db.session.commit()
+	return jsonify({"code":20000})
+
+@v2_0.route('/dict/<int:dict_id>', methods=['GET'])
+@auth_token
+def get_dict(dict_id):
+	dictlist = []
+	dicts = Dict.query.filter_by(id=user_id).first()
+	if not user:
+		abort(404)
+	dicts_dict = dicts.__dict__
+	dicts_dict.pop('_sa_instance_state')
+	dictlist.append(dicts_dict)
+	return jsonify(dictlist)
+
+@v2_0.route('/dict/del/<int:dict_id>', methods=['GET'])
+@auth_token
+def del_dict(dict_id):
+	dicts = Dict.query.filter_by(id=dict_id).first()	
+	if not dicts:
+		abort(404)
+	db.session.delete(dicts)
+	db.session.commit()
+	return jsonify({"code":20000})
+

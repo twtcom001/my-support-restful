@@ -119,29 +119,7 @@ class Logs(db.Model):
     op_time = db.Column(db.DateTime, doc="最后登录时间")
     comment = db.Column(db.String(255)) 
 
-
-
-class Plants(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    local_id = db.Column(db.String(64), unique=True)
-    familia = db.Column(db.String(64), default='cactus')
-    genus = db.Column(db.String(40))
-    genus_id = db.Column(db.String(40))
-    icbn_name = db.Column(db.String(255))
-    chinese_name = db.Column(db.String(100))
-    info_url = db.Column(db.String(255), doc="参考链接")
-    comment = db.Column(db.String(255), doc="备注")
-
-
-
-class Introduce(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    introduce_id = db.Column(db.String(40))
-    introduce_from = db.Column(db.String(100))
-    introduce_price = db.Column(db.String(20), doc="引进价格")
-    introduce_date = db.Column(db.String(20), doc="引进时间")
-    palnts_id = db.Column(db.String(64), db.ForeignKey('plants.local_id'))
-
+    
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_type = db.Column(db.String(20))
@@ -150,5 +128,47 @@ class Account(db.Model):
     src = db.Column(db.String(20))
     comment = db.Column(db.String(255), doc="备注")
 
+class Plants(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sn = db.Column(db.String(64), unique=True, doc="编号")
+    osn = db.Column(db.String(64), doc="旧编号")
+    familia = db.Column(db.String(64), default='cactus', doc="科")
+    genus = db.Column(db.String(40), doc="属")
+    icbn_name = db.Column(db.String(255), doc="拉丁名")
+    chinese_name = db.Column(db.String(100), doc="中文名")
+    summary = db.Column(db.String(255), doc="简介")
 
+class Dict(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    father = db.Column(db.String(255), doc="父节点")
+    key = db.Column(db.String(255), doc="键")
+    value = db.Column(db.String(255), doc="值")
+
+
+class Introduce(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    plants_id = db.Column(db.Integer, db.ForeignKey('plants.id'))
+    producer_name = db.Column(db.String(255), doc="生产商")
+    introduce_type = db.Column(db.String(255), doc="引进类型")
+    price = db.Column(db.String(20), doc="引进价格")
+    date = db.Column(db.String(20), doc="引进时间")
+    count = db.Column(db.Integer, doc="数量")
+    comment = db.Column(db.String(255), doc="备注")
+
+class Reproduce(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    plants_id = db.Column(db.Integer, db.ForeignKey('plants.id'))
+    reproduce_type = db.Column(db.String(255), doc="繁殖类型")
+    date = db.Column(db.String(20), doc="时间")
+    count = db.Column(db.Integer, doc="数量")
+    comment = db.Column(db.String(255), doc="备注")
+
+class Address(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), doc="姓名")
+    address = db.Column(db.String(255), doc="地址")
+    address_type = db.Column(db.String(255), doc="地址类型")
+    mobile = db.Column(db.String(15), doc="手机号")
+    telephone = db.Column(db.String(15), doc="电话")
+    comment = db.Column(db.String(255), doc="备注")
 

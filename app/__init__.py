@@ -25,6 +25,9 @@ def create_app(config_name):
     #new front
     from .v2_0 import v2_0 as v2_0_blueprint
     app.register_blueprint(v2_0_blueprint, url_prefix='/api/v2.0')
+    # 植物相关接口
+    from .v2_1 import v2_1 as v2_1_blueprint
+    app.register_blueprint(v2_1_blueprint, url_prefix='/api/v2.1')
 
     return app
 
