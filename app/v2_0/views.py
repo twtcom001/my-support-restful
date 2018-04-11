@@ -1,10 +1,14 @@
 # coding:utf-8
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 import json
 from datetime import datetime
 from flask import jsonify, abort, request, g
 from flask_restful import Resource, fields, reqparse
 from functools import wraps
+from sqlalchemy import or_
 
 
 from ..models import Permission, User, Logs, Plants, db, Account, Dict
@@ -45,9 +49,12 @@ def admin_logout():
 def info():
 	if request.args.get('token'):
 		user = User.verify_auth_token(request.args.get('token'))
-		return jsonify({"code":20000,"data":{"roles":user.role_id,"role":user.role_id,"name":user.username,"avatar":"https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"}})
+		if user :
+			return jsonify({"code":20000,"data":{"roles":user.role_id,"role":user.role_id,"name":user.username,"avatar":"https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif"}})
+		else:
+			return jsonify({"code":40100})
 	else:
-		return jsonify({"code":40})
+		return jsonify({"code":40100})
 
 #User 接口
 @v2_0.route('/users', methods=['GET'])
@@ -233,14 +240,20 @@ def del_account(account_id):
 @v2_0.route('/dict', methods=['GET'])
 @acao_auth
 @auth_token
-def get_dictlist(page=1,size=10):
+def get_dictlist(page=1, size=10, keys=''):
 	if request.args.get('page'):
 		page = int(request.args.get('page'))
 	if request.args.get('size'):
 		size = int(request.args.get('size'))
 	dictlist = []
-	dictcount =Dict.query.filter(id>0).count()
-	dict = Dict.query.offset((page-1)*size).limit(size)
+	if  request.args.get('keys') == '' or request.args.get('keys') == None :
+		dictcount =Dict.query.filter(id>0).count()
+		dict = Dict.query.offset((page-1)*size).limit(size)
+	else:
+		keys = request.args.get('keys')
+		dictcount =Dict.query.filter(or_(Dict.key.like('%'+str(keys)+'%'),Dict.father.like('%'+str(keys)+'%'),Dict.value.like('%'+str(keys)+'%'))).count()
+		dict = Dict.query.filter(or_(Dict.key.like('%'+str(keys)+'%'),Dict.father.like('%'+str(keys)+'%'),Dict.value.like('%'+str(keys)+'%'))).offset((page-1)*size).limit(size)		
+
 	for i in dict:
 		i_dict = i.__dict__
 		i_dict.pop('_sa_instance_state')
@@ -306,4 +319,22 @@ def del_dict(dict_id):
 	db.session.delete(dicts)
 	db.session.commit()
 	return jsonify({"code":20000})
+
+@v2_0.route('/dict/<type>', methods=['GET'])
+@acao_auth
+@auth_token
+def get_dict_type(type):
+	dictlist = []
+	dict = Dict.query.filter_by(father=type)		
+
+	for i in dict:
+		i_dict = i.__dict__
+		i_dict.pop('_sa_instance_state')
+		i_dict.pop('key')
+		i_dict.pop('father')
+		i_dict.pop('id')
+		i_dict['label'] = i_dict['value']
+		dictlist.append(i_dict)
+	result ={"code":20000,"data":{"list":dictlist}}
+	return jsonify(result)
 

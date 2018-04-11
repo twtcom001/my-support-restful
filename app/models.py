@@ -8,6 +8,7 @@ from . import db
 
 
 
+
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True, index=True)
@@ -62,7 +63,7 @@ class User(UserMixin, db.Model):
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
 
-    def generate_auth_token(self, expiration = 3600):
+    def generate_auth_token(self, expiration = 7200):
         s = Serializer(current_app.config.get('SECRET_KEY'), expires_in = expiration)
         return s.dumps({ 'id': self.id })
 
@@ -123,8 +124,8 @@ class Logs(db.Model):
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     account_type = db.Column(db.String(20))
-    date = db.Column(db.String(20), doc="录入时间")
-    total = db.Column(db.Integer)
+    date = db.Column(db.Date, doc="录入时间")
+    total = db.Column(db.Float)
     src = db.Column(db.String(20))
     comment = db.Column(db.String(255), doc="备注")
 
@@ -150,8 +151,8 @@ class Introduce(db.Model):
     plants_id = db.Column(db.Integer, db.ForeignKey('plants.id'))
     producer_name = db.Column(db.String(255), doc="生产商")
     introduce_type = db.Column(db.String(255), doc="引进类型")
-    price = db.Column(db.String(20), doc="引进价格")
-    date = db.Column(db.String(20), doc="引进时间")
+    price = db.Column(db.Float, doc="引进价格")
+    date = db.Column(db.Date, doc="引进时间")
     count = db.Column(db.Integer, doc="数量")
     comment = db.Column(db.String(255), doc="备注")
 
@@ -159,7 +160,7 @@ class Reproduce(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     plants_id = db.Column(db.Integer, db.ForeignKey('plants.id'))
     reproduce_type = db.Column(db.String(255), doc="繁殖类型")
-    date = db.Column(db.String(20), doc="时间")
+    date = db.Column(db.Date, doc="时间")
     count = db.Column(db.Integer, doc="数量")
     comment = db.Column(db.String(255), doc="备注")
 
@@ -171,4 +172,5 @@ class Address(db.Model):
     mobile = db.Column(db.String(15), doc="手机号")
     telephone = db.Column(db.String(15), doc="电话")
     comment = db.Column(db.String(255), doc="备注")
+
 
